@@ -24,6 +24,19 @@ describe("register use case", () => {
     expect(isPasswordCorrectlyHashed).toBe(true);
   });
 
+  it("should to register", async () => {
+    const usersRepository = new InMemoryUsersRepository();
+    const registerUseCase = new RegisterUseCase(usersRepository);
+
+    const { user } = await registerUseCase.execute({
+      name: "styven",
+      email: "styven@example.com.br",
+      password: "654321",
+    });
+
+    expect(user.id).toEqual(expect.any(String));
+  });
+
   it("should not be able to register with same email twice", async () => {
     const usersRepository = new InMemoryUsersRepository();
     const registerUseCase = new RegisterUseCase(usersRepository);
@@ -36,25 +49,12 @@ describe("register use case", () => {
       password: "123456",
     });
 
-    expect(() =>
+    await expect(() =>
       registerUseCase.execute({
         name: "Styven",
         email,
         password: "123456",
       })
     ).rejects.toBeInstanceOf(UserAlreadyExistsError);
-  });
-
-  it("should to register", async () => {
-    const usersRepository = new InMemoryUsersRepository();
-    const registerUseCase = new RegisterUseCase(usersRepository);
-
-    const { user } = await registerUseCase.execute({
-      name: "styven",
-      email: "styven@example.com.br",
-      password: "654321",
-    });
-
-    expect(user.id).toEqual(expect.any(String));
   });
 });
